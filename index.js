@@ -33,6 +33,27 @@ app.post("/users", (req, res) => {
 
   res.json({ message: "User added successfully", user: newUser });
 });
+app.put("/users/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name } = req.body;
+
+  const user = users.find(u => u.id === id);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  user.name = name;
+  res.json({ message: "User updated successfully" });
+});
+app.delete("/users/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  users = users.filter(u => u.id !== id);
+
+  res.json({ message: "User deleted successfully" });
+});
+
 
 app.listen(5009, () => {
   console.log("Backend running on http://localhost:5009");
