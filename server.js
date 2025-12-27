@@ -11,36 +11,45 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-// Connect to DB
+/* ===============================
+   DATABASE
+================================ */
 connectDB();
 
-// Middlewares
+/* ===============================
+   MIDDLEWARES
+================================ */
 app.use(cors());
 app.use(express.json());
 
-// API Routes
+/* ===============================
+   API ROUTES
+================================ */
 app.use("/api/resource", resourceRoutes);
 app.use("/api/test", testRoute);
 app.use("/api/auth", authRoutes);
 
 /* ===============================
-   SERVE FRONTEND (OPTION 2)
+   SERVE FRONTEND (PRODUCTION)
 ================================ */
-
-// frontend/dist path
 const frontendPath = path.join(__dirname, "frontend/dist");
 
-
-// serve static files
+// Serve static files
 app.use(express.static(frontendPath));
 
-// fallback for React routing
+// React Router fallback (ONLY for non-API routes)
 app.get("*", (req, res) => {
+  if (req.originalUrl.startsWith("/api")) {
+    return res.status(404).json({ message: "API route not found" });
+  }
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// Server
+/* ===============================
+   SERVER
+================================ */
 const PORT = process.env.PORT || 5002;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
